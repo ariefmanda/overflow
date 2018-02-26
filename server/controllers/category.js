@@ -1,0 +1,52 @@
+const category = require('../models/category');
+module.exports = {
+  find:(req,res,next)=>{
+    category.find()
+      .then(categorys=>{
+        res.json(categorys)
+      })
+      .catch(err=>{
+        next(err)
+      })
+  },
+  findById : (req,res,next)=>{
+    category.findById(req.params.id)
+      .then(categorys=>{
+        res.json(categorys)
+      })
+      .catch(err=>{
+        next(err)
+      })
+  },
+  create:(req,res,next)=>{
+    category.create({
+      name:req.body.name
+    })
+    .then(categorys=>{
+      res.json(categorys)
+    })
+    .catch(err=>{
+      next(err)
+    })
+  },
+  update:(req,res,next)=>{
+    category.findByIdAndUpdate(req.params.id,{
+      name:req.body.name
+    })
+    .then(categorys=>{
+      res.json(categorys)
+    })
+    .catch(err=>{
+      next(err)
+    })
+  },
+  destroy:(req,res,next)=>{
+    category.findByIdAndRemove(req.params.id)
+    .then(categorys=>{
+      res.json(categorys)
+    })
+    .catch(err=>{
+      next(err)
+    })
+  },
+}
