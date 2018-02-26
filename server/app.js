@@ -58,7 +58,7 @@ app.use(function(err, req, res, next) {
 });
 kue.app.listen(6387)
 queue.process('email',function(job,done){
-  sgMail.setApiKey("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");
+  sgMail.setApiKey(process.env.sendgrid);
   const msg = {
     to: job.data.email,
     from: 'arief.manda56@gmail.com',
