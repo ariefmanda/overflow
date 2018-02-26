@@ -1,4 +1,6 @@
 const answer = require('../models/answer');
+var kue = require('kue')
+  , queue = kue.createQueue();
 module.exports = {
   find:(req,res,next)=>{
     answer.find()
@@ -31,6 +33,7 @@ module.exports = {
       })
   },
   create:(req,res,next)=>{
+    console.log(req.body);
     answer.create({
       answer: req.body.answer,
       UserId: req.decoded._id,
@@ -38,7 +41,26 @@ module.exports = {
       point: req.body.point
     })
     .then(answers=>{
-      res.json(answers)
+      answer.findOne(answer)
+      .populate(['UserId','QuestionId'])
+      .then(data=>{
+        queue.create('email',{
+          email:data.UserId.email,
+          text: `Anda mendapatkan Jawaban baru untuk pertanyaan ${data.QuestionId.question}`,
+          subject: 'HacktivOverFlor-Simple by ariefmanda',
+          html: `<p>Anda mendapatkan Jawaban baru untuk pertanyaan: ${data.QuestionId.question}<p><br>
+          Please check in : <a href="http://overflow.feedomain.tk">Hacktiv Over Flow Simple</a>`
+        }).save(err=>{
+          if(err){
+            next(err)
+          }else{
+            res.json(answers)
+          }
+        })
+      })
+      .catch((err) => {
+        next(err)
+      })
     })
     .catch(err=>{
       next(err)

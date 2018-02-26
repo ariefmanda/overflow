@@ -5,6 +5,16 @@ var bodyParser = require('body-parser');
 var boom = require('boom')
 var cors = require('cors')
 var fb = require('fb')
+const sgMail = require('@sendgrid/mail');
+// var kueUiExpress = require('kue-ui-express');
+var kue = require('kue')
+  , queue = kue.createQueue({
+    prefix: 'ququ',
+    redis:{
+      port:6379,
+      host:'127.0.0.1'
+    }
+  });
 var mongoose = require('mongoose')
 require('dotenv').config()
 
@@ -46,5 +56,18 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500).send(err)
 });
-
+kue.app.listen(6387)
+queue.process('email',function(job,done){
+  sgMail.setApiKey("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");
+  const msg = {
+    to: job.data.email,
+    from: 'arief.manda56@gmail.com',
+    subject: job.data.subject,
+    text: job.data.text,
+    html: job.data.html,
+  };
+  console.log(msg);
+  sgMail.send(msg);
+  done()
+})
 module.exports = app;

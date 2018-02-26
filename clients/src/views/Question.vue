@@ -216,7 +216,12 @@ export default {
           },
         )
         .then(({ data }) => {
+          this.formanswer=""
           this.start();
+          this.$notify({
+            type: 'success',
+            text: 'Terima kasih, Jawaban anda telah dikirim ke email penanya',
+          });
         })
         .catch((err) => {
           console.error(err);
