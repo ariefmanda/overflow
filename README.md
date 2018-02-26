@@ -75,15 +75,16 @@ directory: 2326 file: 6920
 ### ROUTE
 #### CLIENT
 
-| Router                      | Description       |
-|-----------------------    |:----:|-------------------|
-|/          |Jumbotron Halaman Utama  |     |
-|/category          |Menampilkan semua category dan Question dengan fitur category per topik dan search serta di sort berdasarkan point terbanyak |     |
-|/category/:id          |Menampilkan Category per Id Params yang diinginkan  |     |
-|/question/:id          |Menampilkan pertanyaan yang dipilih serta jawaban dari pertanyaan dengan fitur sort dari point yang terbanyak (tidak bisa menambahkan point dirinya sendiri)   |     |
-|/admin          |menampilkan halaman admin dengan menghapus user dan question>>>answer  |     |
+| Router 	                | Description |
+|-----------------------    |:----:|
+|/          |Jumbotron Halaman Utama  | 
+|/category          |Menampilkan semua category dan Question dengan fitur category per topik dan search serta di sort berdasarkan point terbanyak |
+|/category/:id          |Menampilkan Category per Id Params yang diinginkan  |
+|/question/:id          |Menampilkan pertanyaan yang dipilih serta jawaban dari pertanyaan dengan fitur sort dari point yang terbanyak (tidak bisa menambahkan point dirinya sendiri)   |
+|/admin          |menampilkan halaman admin dengan menghapus user dan question>>>answer  |  
 
 #### ADMIN
+
 BaseURL : feedomain.tk:3004 <br>
 Kue-UI	: feedomain.tk:6387
 
