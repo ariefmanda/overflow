@@ -1,71 +1,71 @@
 <template>
-  <div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <router-link to="/"  class="navbar-brand" style="cursor:pointer;color:white">HacktivOverflow Simple</router-link>
+<div>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <router-link to="/" class="navbar-brand" style="cursor:pointer;color:white">HacktivOverflow Simple</router-link>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarColor01">
-        <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
           <router-link to="/category" style="cursor:pointer;color:white">Home
-          <span class="sr-only">(current)</span>
+            <span class="sr-only">(current)</span>
           </router-link>
         </li>
-        </ul>
-        <div v-if="!token">
-            <button class="btn btn-primary my-2 my-sm-0" @click="login()">Login Facebook</button>
-        </div>
-        <div v-else>
-            <button class="btn btn-primary my-2 my-sm-0"  data-toggle="modal" data-target="#create">Create Question</button>
-            <button class="btn btn-primary my-2 my-sm-0" @click="logout" >Logout</button>
-        </div>
+      </ul>
+      <div v-if="!token">
+        <button class="btn btn-primary my-2 my-sm-0" @click="login()">Login Facebook</button>
+      </div>
+      <div v-else>
+        <button class="btn btn-primary my-2 my-sm-0" data-toggle="modal" data-target="#create">Create Question</button>
+        <button class="btn btn-primary my-2 my-sm-0" @click="logout">Logout</button>
+      </div>
     </div>
-    </nav>
-    <div class="modal" id="create">
+  </nav>
+  <div class="modal" id="create">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
+      <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title">Create</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <h5 class="modal-title">Create</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
             </button>
         </div>
         <div class="modal-body">
-            <form @submit.prevent="created()">
-              <fieldset>
-                <div class="form-group">
+          <form @submit.prevent="created()">
+            <fieldset>
+              <div class="form-group">
                 <label for="tiles">Title</label>
                 <input type="text" class="form-control" v-model="create.title" placeholder="Title Your Question">
-                </div>
-                <div class="form-group">
+              </div>
+              <div class="form-group">
                 <label for="tiles">Question</label>
                 <textarea type="email" class="form-control" v-model="create.question" placeholder="Your Question">
                 </textarea>
-                </div>
-                <div class="form-group">
+              </div>
+              <div class="form-group">
                 <label for="tile">Category</label>
                 <select v-model="create.category">
                   <option v-for="category in categories" :value="category._id" :key="category._id">
                     {{ category.name }}
                   </option>
                 </select>
-                </div>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Submit</button>
-              </fieldset>
-            </form>
+              </div>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </fieldset>
+          </form>
         </div>
-        </div>
+      </div>
     </div>
-    </div>
-    <notifications/>
   </div>
+  <notifications/>
+</div>
 </template>
 
 <script>
-window.fbAsyncInit = function () {
+window.fbAsyncInit = function() {
   FB.init({
     appId: '1007524822728521',
     cookie: true, // enable cookies to allow the server to access
@@ -78,7 +78,7 @@ window.fbAsyncInit = function () {
   });
 };
 // Load the SDK asynchronously
-(function (d, s, id) {
+(function(d, s, id) {
   let js,
     fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
@@ -105,7 +105,9 @@ export default {
   methods: {
     start() {
       this.$axios.get('/category')
-        .then(({ data }) => {
+        .then(({
+          data
+        }) => {
           this.categories = data;
         })
         .catch((err) => {
@@ -122,18 +124,21 @@ export default {
           } else {
             console.log(response, 'belum connect');
           }
+        }, {
+          scope: 'public_profile,email'
         },
-        { scope: 'public_profile,email' },
       );
     },
     login() {
       this.setLogin((e) => {
         this.$axios.get('/auth', {
-          headers: {
-            fbtoken: e,
-          },
-        })
-          .then(({ data }) => {
+            headers: {
+              fbtoken: e,
+            },
+          })
+          .then(({
+            data
+          }) => {
             localStorage.setItem('token', data.token);
             localStorage.setItem('UserId', data.UserId);
             this.$store.dispatch('setToken', data.token);
@@ -149,15 +154,17 @@ export default {
     },
     created() {
       this.$axios.post('/question', {
-        title: this.create.title,
-        question: this.create.question,
-        CategoryId: this.create.category,
-      }, {
-        headers: {
-          token: this.token,
-        },
-      })
-        .then(({ data }) => {
+          title: this.create.title,
+          question: this.create.question,
+          CategoryId: this.create.category,
+        }, {
+          headers: {
+            token: this.token,
+          },
+        })
+        .then(({
+          data
+        }) => {
           this.$notify({
             type: 'success',
             text: 'Question berhasil ditambah',

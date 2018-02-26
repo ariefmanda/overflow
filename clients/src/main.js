@@ -8,7 +8,7 @@ import './registerServiceWorker';
 Vue.config.productionTip = false;
 Vue.use(notifications);
 Vue.prototype.$axios = require('axios').create({
-  baseURL: 'http://localhost:3004/api',
+  baseURL: 'http://35.200.153.228:3004/api',
 });
 
 new Vue({

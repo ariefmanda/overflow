@@ -1,15 +1,15 @@
 <template>
-  <div>
-    <header>
-      <Header/>
-    </header>
-    <div class="rows">
-        <router-view></router-view>
-    </div>
-    <footer>
-      <Footer/>
-    </footer>
+<div>
+  <header>
+    <Header/>
+  </header>
+  <div class="rows">
+    <router-view></router-view>
   </div>
+  <footer>
+    <Footer/>
+  </footer>
+</div>
 </template>
 
 <script>
