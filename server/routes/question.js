@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var question = require('../controllers/question')
 var auth = require('../middleware/authorization')
-/* GET users listing. */
+
+
 router.put('/point/:id',auth,question.updatePoint)
 router.put('/minuspoint/:id',auth,question.minusPoint)
 router.get('/user/:id',question.findByUser)

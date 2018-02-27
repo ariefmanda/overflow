@@ -85,6 +85,7 @@ module.exports = {
         answers.point = req.body.point
       }else{
         answers.point.push(req.body.point)
+        
       }
       answers.save()
       res.json(answers)

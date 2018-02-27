@@ -18,5 +18,6 @@ var questionSchema = new Schema({
   },{
     timestamps: true
   });
+  
 var question = mongoose.model('question', questionSchema);
 module.exports = question;
