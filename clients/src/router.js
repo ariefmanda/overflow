@@ -1,7 +1,9 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
+import NotFound from './views/NotFound.vue';
 import admin from './views/Admin.vue';
+import profil from './views/Profil.vue';
 import Question from './views/Question.vue';
 import Jumbotron from './views/Jumbotron.vue';
 
@@ -33,12 +35,36 @@ const router = new Router({
       component: admin,
     },
     {
+      path: '/profil',
+      name: 'profil',
+      component: profil,
+    },
+    {
       path: '/question/:id',
       name: 'question',
       component: Question,
       props: true,
     },
+    {
+      path: '*',
+      name: 'notfound',
+      component: NotFound,
+    },
   ],
 });
+router.beforeEach((to, from, next) => {
+  if (to.name=="profil") {
+    if (localStorage.getItem("token")) {
+      next();
+    } else {
+      next({
+        name: 'category'
+      });
+    }
+  } else {
+    next();
+  }
+});
+
 
 export default router;

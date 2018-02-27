@@ -15,7 +15,7 @@
             <th>
               <router-link :to="'/question/'+question._id" style="cursor:pointer">{{question.title}}</router-link>
             </th>
-            <td>{{question.point}}</td>
+            <td>{{question.point.length}}</td>
           </tr>
         </tbody>
         <tfoot>
@@ -23,7 +23,6 @@
       </table>
     </div>
   </div>
-  <!-- /.col-lg-9 -->
   <div class="col-lg-3">
     <div>
       <form class="form-inline" @submit.prevent="searching">
@@ -46,7 +45,7 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapState , mapActions } from 'vuex'
 
 export default {
   name: 'home',
@@ -57,10 +56,17 @@ export default {
       questionsAbsolute: [],
       query: this.$route.query.category,
       search:''
-    };
+    }
+  },
+  computed: {
+    ...mapState([
+      'categories'
+    ])
   },
   created() {
     this.start();
+    this.$store.dispatch('getQuestions')
+    this.$store.dispatch('getCategories')
   },
   props: ['id'],
   methods: {
@@ -78,29 +84,36 @@ export default {
             }) => {
               this.categories = data;
               if (this.$route.params.id) {
-                this.questions = this.questionsAbsolute.filter(f => f.CategoryId === this.$route.params.id);
+                this.questions = this.questionsAbsolute.filter(f =>{ 
+                  return f.CategoryId._id === this.$route.params.id
+                })
               }
             })
             .catch((err) => {
-              console.error(err);
+              this.$notify({
+                type: 'error',
+                text: err.message,
+              });
             });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+            type: 'error',
+            text: err.message,
+          });
         });
     },
     searching(){
       if(this.search){
         this.questions = this.questionsAbsolute.filter(e=>{
           let s=false
-          if(e.question.toLowerCase().split(' ').join('').split(this.search.toLowerCase().split(' ').join('')).length>1){
+          if(e.title.toLowerCase().split(' ').join('').split(this.search.toLowerCase().split(' ').join('')).length>1){
             s=true
           }
           return s
         })
         this.search=""
       }else{
-        console.log(this.items);
         this.questions = this.questionsAbsolute
       }
     }
@@ -108,9 +121,11 @@ export default {
   watch: {
     id(e) {
       if (e) {
-        this.questions = this.questionsAbsolute.filter(f => f.CategoryId === e);
+        this.questions = this.questionsAbsolute.filter(f => {
+          return f.CategoryId._id === e
+        })
       } else {
-        this.questions = this.questionsAbsolute;
+        this.questions = this.questionsAbsolute
       }
     },
   },

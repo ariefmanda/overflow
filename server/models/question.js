@@ -11,7 +11,10 @@ var questionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'category'
     },
-    point: Number
+    point: [{
+      type: Schema.Types.ObjectId,
+      ref: 'user'
+    }]
   },{
     timestamps: true
   });

@@ -18,6 +18,11 @@
         <button class="btn btn-primary my-2 my-sm-0" @click="login()">Login Facebook</button>
       </div>
       <div v-else>
+        <button class="btn btn-primary my-2 my-sm-0">
+        <router-link to="/profil" style="cursor:pointer;color:white">Profil
+            <span class="sr-only">(current)</span>
+        </router-link>
+        </button>
         <button class="btn btn-primary my-2 my-sm-0" data-toggle="modal" data-target="#create">Create Question</button>
         <button class="btn btn-primary my-2 my-sm-0" @click="logout">Logout</button>
       </div>
@@ -41,7 +46,7 @@
               </div>
               <div class="form-group">
                 <label for="tiles">Question</label>
-                <textarea type="email" class="form-control" v-model="create.question" placeholder="Your Question">
+                <textarea class="form-control" v-model="create.question" placeholder="Your Question">
                 </textarea>
               </div>
               <div class="form-group">
@@ -67,7 +72,7 @@
 <script>
 window.fbAsyncInit = function() {
   FB.init({
-    appId: '1007524822728521',
+    appId: '1239370809540745',// 1007524822728521
     cookie: true, // enable cookies to allow the server to access
     // the session
     xfbml: true, // parse social plugins on this page

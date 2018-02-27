@@ -2,6 +2,7 @@ const question = require('../models/question');
 module.exports = {
   find:(req,res,next)=>{
     question.find()
+      .populate(['UserId','CategoryId'])
       .then(questions=>{
         res.json(questions)
       })
@@ -36,7 +37,6 @@ module.exports = {
       question:req.body.question,
       UserId:req.decoded._id,
       CategoryId:req.body.CategoryId,
-      point:0
     })
     .then(questions=>{
       res.json(questions)
@@ -60,10 +60,27 @@ module.exports = {
     })
   },
   updatePoint:(req,res,next)=>{
-    question.findByIdAndUpdate(req.params.id,{
-        point: req.body.point
-    })
+    question.findById(req.params.id)
     .then(questions=>{
+      if(questions.point){
+        questions.point.push(req.body.point)
+      }else{
+        questions.point = req.body.point
+      }
+      questions.save()
+      res.json(questions)
+    })
+    .catch(err=>{
+      next(err)
+    })
+  },
+  minusPoint:(req,res,next)=>{
+    question.findById(req.params.id)
+    .then(questions=>{
+      questions.point=questions.point.filter(e=>{
+        return String(e) !== (req.body.point)
+      })
+      questions.save()
       res.json(questions)
     })
     .catch(err=>{

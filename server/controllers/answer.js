@@ -38,7 +38,6 @@ module.exports = {
       answer: req.body.answer,
       UserId: req.decoded._id,
       QuestionId: req.body.QuestionId,
-      point: req.body.point
     })
     .then(answers=>{
       answer.findOne(answer)
@@ -80,10 +79,27 @@ module.exports = {
     })
   },
   updatePoint:(req,res,next)=>{
-    answer.findByIdAndUpdate(req.params.id,{
-        point: req.body.point
-    })
+    answer.findById(req.params.id)
     .then(answers=>{
+      if(!answers.point){
+        answers.point = req.body.point
+      }else{
+        answers.point.push(req.body.point)
+      }
+      answers.save()
+      res.json(answers)
+    })
+    .catch(err=>{
+      next(err)
+    })
+  },
+  minusPoint:(req,res,next)=>{
+    answer.findById(req.params.id)
+    .then(answers=>{
+      answers.point=answers.point.filter(e=>{
+        return String(e) !== (req.body.point)
+      })
+      answers.save()
       res.json(answers)
     })
     .catch(err=>{

@@ -1,92 +1,93 @@
 <template>
-<div class="row" id="question">
-  <div class="col-md-8">
-    <h1 class="mt-4">{{question.title}}</h1>
-    <p class="lead">
-      by
-      <a :href="'mailto:'+question.UserId.email">{{question.UserId.name}}</a>
-    </p>
-    <hr>
-    <p>{{question.createdAt}}</p>
-    <hr>
-    <div class="row" style="margin-left:10px">
-      <div class="col-md-2" v-if="token && question.UserId._id !== UserId">
-        <div class="rows">
-          <div class="row">
-            <i class="fa fa-hand-o-up" style="font-size:15px;cursor:pointer" @click="plusQuestion(question._id)"></i>
-          </div>
-          <div class="row">
-            <h2>{{question.point}}</h2>
-          </div>
-          <div class="row">
-            <i class="fa fa-hand-o-down" style="font-size:15px;cursor:pointer" @click="minusQuestion(question._id)"></i>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-8">
-        {{question.question}}
-        <div v-if="UserId === question.UserId._id">
-          <i class="fa fa-edit" style="font-size:24px;cursor:pointer" data-toggle="modal" data-target="#update"></i>
-          <i class="fa fa-trash" style="font-size:24px;cursor:pointer" @click="destroyQuestion()"></i>
-        </div>
-      </div>
-    </div>
-    <hr>
-    <div class="card my-4">
-      <h5 class="card-header">Your Answer:</h5>
-      <div class="card-body">
-        <div class="form-group">
-          <textarea class="form-control" rows="3" v-model="formanswer"></textarea>
-        </div>
-        <button class="btn btn-primary" @click="addAnswer()" v-if="token">Submit</button>
-      </div>
-    </div>
-
-    <!-- Single Comment -->
-    <div class="media mb-4" v-for="(ans,i) in answer" :key="i">
+  <div class="row" id="question">
+    <div class="col-md-8">
+      <h1 class="mt-4">{{question.title}}</h1>
+      <p class="lead">
+        by
+        <a :href="'mailto:'+question.UserId.email">{{question.UserId.name}}</a>
+      </p>
+      <hr>
+      <p>{{question.createdAt}}</p>
+      <hr>
       <div class="row" style="margin-left:10px">
-        <div class="col-md-2" v-if="token && ans.UserId._id !== UserId">
+        <div class="col-md-2" >
           <div class="rows">
-            <div class="row">
-              <i class="fa fa-hand-o-up" style="font-size:24px;cursor:pointer" @click="plusAnswer(ans._id,i)"></i>
+            <div class="row" v-if="token && question.UserId._id !== UserId" >
+              <i class="fa fa-hand-o-up" style="font-size:15px;cursor:pointer" @click="plusQuestion(question._id)"></i>
             </div>
             <div class="row">
-              <h2>{{ans.point}}</h2>
+              <h2>{{question.point.length || 0}}</h2>
             </div>
-            <div class="row">
-              <i class="fa fa-hand-o-down" style="font-size:24px;cursor:pointer" @click="minusAnswer(ans._id,i)"></i>
+            <div class="row" v-if="token && question.UserId._id !== UserId" >
+              <i class="fa fa-hand-o-down" style="font-size:15px;cursor:pointer" @click="minusQuestion(question._id)"></i>
             </div>
           </div>
         </div>
-        <div class="col-md-10">
-          <img class="d-flex mr-3 rounded-circle" :src="ans.UserId.image_url" alt="">
-          <div class="media-body">
-            <h5 class="mt-0">{{ans.UserId.name}}</h5> {{ans.answer}}
+        <div class="col-md-8">
+          {{question.question}}
+          <div v-if="UserId === question.UserId._id">
+            <i class="fa fa-edit" style="font-size:24px;cursor:pointer" data-toggle="modal" data-target="#update"></i>
+            <i class="fa fa-trash" style="font-size:24px;cursor:pointer" @click="destroyQuestion()"></i>
           </div>
-          <div v-if="UserId === ans.UserId._id">
-            <i class="fa fa-edit" style="font-size:24px;cursor:pointer" data-toggle="modal" :data-target="'#update'+ans._id"></i>
-            <i class="fa fa-trash" style="font-size:24px;cursor:pointer" @click="destroyAnswer(ans._id)"></i>
+        </div>
+      </div>
+      <hr>
+      <div class="card my-4">
+        <h5 class="card-header">Your Answer:</h5>
+        <div class="card-body">
+          <div class="form-group">
+            <textarea class="form-control" rows="3" v-model="formanswer"></textarea>
           </div>
-          <div class="modal" :id="'update'+ans._id">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Create</h5>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                  <form @submit.prevent="updatedAnswer(ans._id,i)">
-                    <fieldset>
-                      <div class="form-group">
-                        <label for="tiles">Answer</label>
-                        <input type="text" class="form-control" v-model="updateAnswer.answer" :placeholder="'Update your Answer '+ans.answer+'?'">
-                      </div>
-                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                      <button type="submit" class="btn btn-primary">Submit</button>
-                    </fieldset>
-                  </form>
+          <button class="btn btn-primary" @click="addAnswer()" v-if="token">Submit</button>
+        </div>
+      </div>
+
+      <!-- Single Comment -->
+      <div class="media mb-4" v-for="(ans,i) in answer" :key="i">
+        <div class="row" style="margin-left:10px">
+          <div class="col-md-2">
+            <div class="rows">
+              <div class="row" v-if="token && ans.UserId._id !== UserId">
+                <i class="fa fa-hand-o-up" style="font-size:24px;cursor:pointer" @click="plusAnswer(ans._id,i)"></i>
+              </div>
+              <div class="row">
+                <h2>{{ans.point.length || 0}}</h2>
+              </div>
+              <div class="row" v-if="token && ans.UserId._id !== UserId">
+                <i class="fa fa-hand-o-down" style="font-size:24px;cursor:pointer" @click="minusAnswer(ans._id,i)"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-10">
+            <img class="d-flex mr-3 rounded-circle" :src="ans.UserId.image_url" alt="">
+            <div class="media-body">
+              <h5 class="mt-0">{{ans.UserId.name}}</h5> {{ans.answer}}
+            </div>
+            <div v-if="UserId === ans.UserId._id">
+              <i class="fa fa-edit" style="font-size:24px;cursor:pointer" data-toggle="modal" :data-target="'#update'+ans._id"></i>
+              <i class="fa fa-trash" style="font-size:24px;cursor:pointer" @click="destroyAnswer(ans._id)"></i>
+            </div>
+            <div class="modal" :id="'update'+ans._id">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Create</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                    <form @submit.prevent="updatedAnswer(ans._id,i)">
+                      <fieldset>
+                        <div class="form-group">
+                          <label for="tiles">Answer</label>
+                          <input type="text" class="form-control" v-model="updateAnswer.answer" :placeholder="'Update your Answer '+ans.answer+'?'">
+                        </div>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                      </fieldset>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
@@ -94,62 +95,62 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="col-md-3">
-    <div>
-      <ul class="list-group">
-        <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor:pointer">
-          <router-link to="/category">All</router-link>
-        </li>
-        <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor:pointer" v-for="(category,i) in categories" :key="i">
-          <router-link :to="'/category/'+category._id">
-            {{category.name}}
-          </router-link>
-        </li>
-      </ul>
+    <div class="col-md-3">
+      <div>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor:pointer">
+            <router-link to="/category">All</router-link>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor:pointer" v-for="(category,i) in categories" :key="i">
+            <router-link :to="'/category/'+category._id">
+              {{category.name}}
+            </router-link>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-  <div class="modal" id="update">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Create</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-        </div>
-        <div class="modal-body">
-          <form @submit.prevent="updatedQuestion()">
-            <fieldset>
-              <div class="form-group">
-                <label for="tiles">Title</label>
-                <input type="text" class="form-control" v-model="question.title" placeholder="Title Your Question">
-              </div>
-              <div class="form-group">
-                <label for="tiles">Question</label>
-                <textarea type="text" class="form-control" v-model="question.question" placeholder="Your Question">
-                        </textarea>
-              </div>
-              <div class="form-group">
-                <label for="tile">Category</label>
-                <select v-model="question.category">
-                        <option v-for="category in categories" :value="category._id" :key="category._id">
-                            {{ category.name }}
-                        </option>
-                        </select>
-              </div>
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </fieldset>
-          </form>
+    <div class="modal" id="update">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Create</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                      </button>
+          </div>
+          <div class="modal-body">
+            <form @submit.prevent="updatedQuestion()">
+              <fieldset>
+                <div class="form-group">
+                  <label for="tiles">Title</label>
+                  <input type="text" class="form-control" v-model="question.title" placeholder="Title Your Question">
+                </div>
+                <div class="form-group">
+                  <label for="tiles">Question</label>
+                  <textarea type="text" class="form-control" v-model="question.question" placeholder="Your Question">
+                          </textarea>
+                </div>
+                <div class="form-group">
+                  <label for="tile">Category</label>
+                  <select v-model="question.category">
+                          <option v-for="category in categories" :value="category._id" :key="category._id">
+                              {{ category.name }}
+                          </option>
+                          </select>
+                </div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </fieldset>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
+import { mapState,mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -162,6 +163,8 @@ export default {
   },
   created() {
     this.start();
+    this.$store.dispatch('getQuestions')
+    this.$store.dispatch('getCategories')
   },
   computed: {
     token() {
@@ -194,15 +197,24 @@ export default {
                   this.answer = data.sort((a, b) => b.point > a.point);
                 })
                 .catch((err) => {
-                  console.error(err);
+                  this.$notify({
+                type: 'error',
+                text: err.message,
+              });
                 });
             })
             .catch((err) => {
-              console.error(err);
+              cthis.$notify({
+                type: 'error',
+                text: err.message,
+              });
             });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+                type: 'error',
+                text: err.message,
+              });
         });
     },
     addAnswer() {
@@ -229,35 +241,63 @@ export default {
           });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+                type: 'error',
+                text: err.message,
+              });
         });
     },
     plusQuestion(id) {
-      this.$axios
-        .put(
-          `/question/point/${id}`, {
-            point: this.question.point + 1,
-          }, {
-            headers: {
-              token: localStorage.getItem('token'),
-            },
-          },
-        )
-        .then(({
-          data
-        }) => {
-          this.start();
+      let check=[]
+      if(this.question.point.length>0){
+          check = this.question.point.filter(e=>{
+          return e == this.UserId
         })
-        .catch((err) => {
-          console.error(err);
-        });
+      }
+        if(check[0]){
+          this.$notify({
+            type: 'error',
+            text: 'Anda sudah menambahkan Pertanyaan ini sebelumnya',
+          });
+        }else{
+          this.$axios
+            .put(
+              `/question/point/${id}`, {
+                point: this.UserId,
+              }, {
+                headers: {
+                  token: localStorage.getItem('token'),
+                },
+              },
+            )
+            .then(({
+              data
+            }) => {
+              this.start();
+            })
+            .catch((err) => {
+              this.$notify({
+                type: 'error',
+                text: err.message,
+              });
+            });
+        }
     },
     minusQuestion(id) {
-      if (this.question.point - 1 >= 0) {
+      if (this.question.point.length> 0) {
+        let check = this.question.point.filter(e=>{
+          return e == this.UserId
+        })
+        if(!check[0]){
+          this.$notify({
+            type: 'error',
+            text: 'Anda harus menambahkan point ini sebelumnya agar penanya merasa tidak dianggap',
+          });
+        }else{
         this.$axios
           .put(
-            `/question/point/${id}`, {
-              point: this.question.point - 1,
+            `/question/minuspoint/${id}`, {
+              point: this.UserId,
             }, {
               headers: {
                 token: localStorage.getItem('token'),
@@ -270,8 +310,12 @@ export default {
             this.start();
           })
           .catch((err) => {
-            console.error(err);
+            this.$notify({
+                type: 'error',
+                text: err.message,
+              });
           });
+        }
       } else {
         this.$notify({
           type: 'error',
@@ -280,31 +324,56 @@ export default {
       }
     },
     plusAnswer(id, index) {
-      this.$axios
-        .put(
-          `/answer/point/${id}`, {
-            point: this.answer[index].point + 1,
-          }, {
-            headers: {
-              token: localStorage.getItem('token'),
-            },
-          },
-        )
-        .then(({
-          data
-        }) => {
-          this.start();
+      let check=[]
+      if(this.answer[index].point.length>0){
+      check = this.answer[index].point.filter(e=>{
+          return e == this.UserId
         })
-        .catch((err) => {
-          console.error(err);
-        });
+      }
+        if(check[0]){
+          this.$notify({
+            type: 'error',
+            text: 'Anda sudah menambahkan jawaban ini sebelumnya',
+          });
+        }else{
+          this.$axios
+            .put(
+              `/answer/point/${id}`, {
+                point: this.UserId,
+              }, {
+                headers: {
+                  token: localStorage.getItem('token'),
+                },
+              },
+            )
+            .then(({
+              data
+            }) => {
+              this.start();
+            })
+            .catch((err) => {
+              this.$notify({
+                type: 'error',
+                text: err.message,
+              });
+            });
+        }
     },
     minusAnswer(id, index) {
-      if (this.answer[index].point - 1 >= 0) {
-        this.$axios
+      if (this.answer[index].point.length> 0) {
+        let check = this.answer[index].point.filter(e=>{
+          return e == this.UserId
+        })
+        if(!check[0]){
+          this.$notify({
+            type: 'error',
+            text: 'Anda harus menambahkan point ini sebelumnya agar penanya merasa tidak dianggap',
+          });
+        }else{
+          this.$axios
           .put(
-            `/answer/point/${id}`, {
-              point: this.answer[index].point - 1,
+            `/answer/minuspoint/${id}`, {
+              point: this.UserId,
             }, {
               headers: {
                 token: localStorage.getItem('token'),
@@ -317,8 +386,12 @@ export default {
             this.start();
           })
           .catch((err) => {
-            console.error(err);
+            this.$notify({
+                type: 'error',
+                text: err.message,
+              });
           });
+        }
       } else {
         this.$notify({
           type: 'error',
@@ -343,7 +416,10 @@ export default {
           });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+                type: 'error',
+                text: err.message,
+              });
         });
     },
     destroyAnswer(id) {
@@ -361,7 +437,10 @@ export default {
           });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+                type: 'error',
+                text: err.message,
+              });
         });
     },
     updatedQuestion() {
@@ -386,7 +465,10 @@ export default {
           });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+                type: 'error',
+                text: err.message,
+              });
         });
     },
     updatedAnswer(id, index) {
@@ -412,7 +494,10 @@ export default {
           });
         })
         .catch((err) => {
-          console.error(err);
+          this.$notify({
+                type: 'error',
+                text: err.message,
+              });
         });
     },
   },
