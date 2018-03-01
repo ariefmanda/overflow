@@ -88,7 +88,7 @@ BaseURL : overflow.feedomain.tk
 #### ADMIN
 
 BaseURL : feedomain.tk:3004 <br>
-Kue-UI	: feedomain.tk:6387
+Kue-UI	: feedomain.tk:6363
 
 | Router 	                | HTTP | Description       |
 |-----------------------    |:----:|-------------------|
