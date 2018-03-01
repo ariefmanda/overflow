@@ -56,12 +56,12 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
   res.status(err.status || 500).send(err)
 });
-kue.app.listen(6387)
+kue.app.listen(6363)
 queue.process('email',function(job,done){
   sgMail.setApiKey(process.env.sendgrid);
   const msg = {
     to: job.data.email,
-    from: 'arief.manda56@gmail.com',
+    from: 'arief.manda57@gmail.com',
     subject: job.data.subject,
     text: job.data.text,
     html: job.data.html,
