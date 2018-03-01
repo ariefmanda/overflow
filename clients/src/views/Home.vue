@@ -1,5 +1,6 @@
 <template>
-<div class="row" style="margin-top:40px">
+<div class="container" style="margin-top:40px">
+  <div class="row">
   <!-- /.col-lg-3 -->
   <div class="col-lg-9">
     <div class="card">
@@ -27,7 +28,7 @@
     <div>
       <form class="form-inline" @submit.prevent="searching">
           <input class="form-control mr-sm-2" type="text" v-model="search" placeholder="Search">
-          <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+          <button class="btn btn-secondary my-sm-0" type="submit">Search</button>
         </form>
       <ul class="list-group">
         <li class="list-group-item d-flex justify-content-between align-items-center" style="cursor:pointer">
@@ -40,6 +41,7 @@
         </li>
       </ul>
     </div>
+   </div>
   </div>
 </div>
 </template>
@@ -58,11 +60,6 @@ export default {
       search:''
     }
   },
-  computed: {
-    ...mapState([
-      'categories'
-    ])
-  },
   created() {
     this.start();
     this.$store.dispatch('getQuestions')
@@ -75,7 +72,9 @@ export default {
         .then(({
           data
         }) => {
-          data = data.sort((a, b) => b.point > a.point);
+          data = data.sort((a, b) => {
+            return (b.point.length||0) > (a.point.length||0)
+          });
           this.questions = data;
           this.questionsAbsolute = data;
           this.$axios.get('/category')

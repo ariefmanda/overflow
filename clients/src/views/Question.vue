@@ -1,4 +1,5 @@
 <template>
+<div class="container">
   <div class="row" id="question">
     <div class="col-md-8">
       <h1 class="mt-4">{{question.title}}</h1>
@@ -7,19 +8,19 @@
         <a :href="'mailto:'+question.UserId.email">{{question.UserId.name}}</a>
       </p>
       <hr>
-      <p>{{question.createdAt}}</p>
+      <p>Created At: {{question.createdAt}} || <b>Share To Facebook</b>: <i class="fa fa-share-square" style="font-size:24px;cursor:pointer" @click="share"></i></p>
       <hr>
       <div class="row" style="margin-left:10px">
         <div class="col-md-2" >
           <div class="rows">
             <div class="row" v-if="token && question.UserId._id !== UserId" >
-              <i class="fa fa-hand-o-up" style="font-size:15px;cursor:pointer" @click="plusQuestion(question._id)"></i>
+              <i class="fa fa-arrow-circle-up" style="font-size:22px;cursor:pointer" @click="plusQuestion(question._id)"></i>
             </div>
             <div class="row">
               <h2>{{question.point.length || 0}}</h2>
             </div>
             <div class="row" v-if="token && question.UserId._id !== UserId" >
-              <i class="fa fa-hand-o-down" style="font-size:15px;cursor:pointer" @click="minusQuestion(question._id)"></i>
+              <i class="fa fa-arrow-circle-down" style="font-size:22px;cursor:pointer" @click="minusQuestion(question._id)"></i>
             </div>
           </div>
         </div>
@@ -48,13 +49,13 @@
           <div class="col-md-2">
             <div class="rows">
               <div class="row" v-if="token && ans.UserId._id !== UserId">
-                <i class="fa fa-hand-o-up" style="font-size:24px;cursor:pointer" @click="plusAnswer(ans._id,i)"></i>
+                <i class="fa fa-arrow-circle-up" style="font-size:24px;cursor:pointer" @click="plusAnswer(ans._id,i)"></i>
               </div>
               <div class="row">
                 <h2>{{ans.point.length || 0}}</h2>
               </div>
               <div class="row" v-if="token && ans.UserId._id !== UserId">
-                <i class="fa fa-hand-o-down" style="font-size:24px;cursor:pointer" @click="minusAnswer(ans._id,i)"></i>
+                <i class="fa fa-arrow-circle-down" style="font-size:24px;cursor:pointer" @click="minusAnswer(ans._id,i)"></i>
               </div>
             </div>
           </div>
@@ -71,20 +72,20 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title">Create</h5>
+                    <h5 class="modal-title">Update</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                       </button>
                   </div>
                   <div class="modal-body">
-                    <form @submit.prevent="updatedAnswer(ans._id,i)">
+                    <form @submit.prevent="updatedAnswer(ans.answer,ans._id,i)">
                       <fieldset>
                         <div class="form-group">
                           <label for="tiles">Answer</label>
-                          <input type="text" class="form-control" v-model="updateAnswer.answer" :placeholder="'Update your Answer '+ans.answer+'?'">
+                          <input type="text" class="form-control" v-model="ans.answer" :placeholder="'Update your Answer '+ans.answer+'?'">
                         </div>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                       </fieldset>
                     </form>
                   </div>
@@ -147,24 +148,25 @@
       </div>
     </div>
   </div>
+  </div>
 </template>
 
 <script>
-import { mapState,mapActions } from 'vuex'
+import { mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
       categories: [],
       question: {},
       answer: [],
-      formanswer: '',
-      updateAnswer: {},
+      formanswer: "",
+      updateAnswer: {}
     };
   },
   created() {
     this.start();
-    this.$store.dispatch('getQuestions')
-    this.$store.dispatch('getCategories')
+    this.$store.dispatch("getQuestions");
+    this.$store.dispatch("getCategories");
   },
   computed: {
     token() {
@@ -172,230 +174,245 @@ export default {
     },
     UserId() {
       return this.$store.state.UserId;
-    },
+    }
   },
-  props: ['id'],
+  props: ["id"],
   methods: {
     start() {
       this.$axios
-        .get('/category')
-        .then(({
-          data
-        }) => {
+        .get("/category")
+        .then(({ data }) => {
           this.categories = data;
           this.$axios
             .get(`/question/${this.id}`)
-            .then(({
-              data
-            }) => {
+            .then(({ data }) => {
               this.question = data;
               this.$axios
                 .get(`/answer/question/${this.id}`)
-                .then(({
-                  data
-                }) => {
-                  this.answer = data.sort((a, b) => b.point > a.point);
+                .then(({ data }) => {
+                  this.answer = data.sort((a, b) => {
+                    return (b.point.length||0) > (a.point.length||0)
+                  });
                 })
-                .catch((err) => {
+                .catch(err => {
                   this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+                    type: "error",
+                    text: err.message
+                  });
                 });
             })
-            .catch((err) => {
+            .catch(err => {
               cthis.$notify({
-                type: 'error',
-                text: err.message,
+                type: "error",
+                text: err.message
               });
             });
         })
-        .catch((err) => {
+        .catch(err => {
           this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+            type: "error",
+            text: err.message
+          });
         });
     },
     addAnswer() {
       this.$axios
         .post(
-          '/answer', {
+          "/answer",
+          {
             answer: this.formanswer,
             QuestionId: this.id,
-            point: 0,
-          }, {
-            headers: {
-              token: localStorage.getItem('token'),
-            },
+            point: 0
           },
+          {
+            headers: {
+              token: localStorage.getItem("token")
+            }
+          }
         )
-        .then(({
-          data
-        }) => {
-          this.formanswer = ""
+        .then(({ data }) => {
+          this.formanswer = "";
           this.start();
           this.$notify({
-            type: 'success',
-            text: 'Terima kasih, Jawaban anda telah dikirim ke email penanya',
+            type: "success",
+            text: "Terima kasih, Jawaban anda telah dikirim ke email penanya"
           });
         })
-        .catch((err) => {
+        .catch(err => {
           this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+            type: "error",
+            text: err.message
+          });
         });
     },
     plusQuestion(id) {
-      let check=[]
-      if(this.question.point.length>0){
-          check = this.question.point.filter(e=>{
-          return e == this.UserId
-        })
+      let check = [];
+      if (this.question.point.length > 0) {
+        check = this.question.point.filter(e => {
+          return e == this.UserId;
+        });
       }
-        if(check[0]){
-          this.$notify({
-            type: 'error',
-            text: 'Anda sudah menambahkan Pertanyaan ini sebelumnya',
+      if (check[0]) {
+        this.$notify({
+          type: "error",
+          text: "Anda sudah menambahkan Pertanyaan ini sebelumnya"
+        });
+      } else {
+        console.log(this.UserId);
+        this.$axios
+          .put(
+            `/question/point/${id}`,
+            {
+              point: this.UserId
+            },
+            {
+              headers: {
+                token: localStorage.getItem("token")
+              }
+            }
+          )
+          .then(({ data }) => {
+            this.start();
+            this.$notify({
+              type: "success",
+              text: "Terima kasih sudah menggunakan vote aplikasi kami"
+            });
+          })
+          .catch(err => {
+            this.$notify({
+              type: "error",
+              text: err.message
+            });
           });
-        }else{
+      }
+    },
+    minusQuestion(id) {
+      if (this.question.point.length > 0) {
+        let check = this.question.point.filter(e => {
+          return e == this.UserId;
+        });
+        if (!check[0]) {
+          this.$notify({
+            type: "error",
+            text:
+              "Anda harus menambahkan point ini sebelumnya"
+          });
+        } else {
           this.$axios
             .put(
-              `/question/point/${id}`, {
-                point: this.UserId,
-              }, {
-                headers: {
-                  token: localStorage.getItem('token'),
-                },
+              `/question/minuspoint/${id}`,
+              {
+                point: this.UserId
               },
+              {
+                headers: {
+                  token: localStorage.getItem("token")
+                }
+              }
             )
-            .then(({
-              data
-            }) => {
+            .then(({ data }) => {
               this.start();
-            })
-            .catch((err) => {
               this.$notify({
-                type: 'error',
-                text: err.message,
+                type: "success",
+                text: "Terima kasih sudah menggunakan vote aplikasi kami"
+              });
+            })
+            .catch(err => {
+              this.$notify({
+                type: "error",
+                text: err.message
               });
             });
         }
-    },
-    minusQuestion(id) {
-      if (this.question.point.length> 0) {
-        let check = this.question.point.filter(e=>{
-          return e == this.UserId
-        })
-        if(!check[0]){
-          this.$notify({
-            type: 'error',
-            text: 'Anda harus menambahkan point ini sebelumnya agar penanya merasa tidak dianggap',
-          });
-        }else{
-        this.$axios
-          .put(
-            `/question/minuspoint/${id}`, {
-              point: this.UserId,
-            }, {
-              headers: {
-                token: localStorage.getItem('token'),
-              },
-            },
-          )
-          .then(({
-            data
-          }) => {
-            this.start();
-          })
-          .catch((err) => {
-            this.$notify({
-                type: 'error',
-                text: err.message,
-              });
-          });
-        }
       } else {
         this.$notify({
-          type: 'error',
-          text: 'Point Sudah tidak bisa dikurangi',
+          type: "error",
+          text: "Point Sudah tidak bisa dikurangi"
         });
       }
     },
     plusAnswer(id, index) {
-      let check=[]
-      if(this.answer[index].point.length>0){
-      check = this.answer[index].point.filter(e=>{
-          return e == this.UserId
-        })
+      let check = [];
+      if (this.answer[index].point.length > 0) {
+        check = this.answer[index].point.filter(e => {
+          return e == this.UserId;
+        });
       }
-        if(check[0]){
-          this.$notify({
-            type: 'error',
-            text: 'Anda sudah menambahkan jawaban ini sebelumnya',
+      if (check[0]) {
+        this.$notify({
+          type: "error",
+          text: "Anda sudah menambahkan jawaban ini sebelumnya"
+        });
+      } else {
+        this.$axios
+          .put(
+            `/answer/point/${id}`,
+            {
+              point: this.UserId
+            },
+            {
+              headers: {
+                token: localStorage.getItem("token")
+              }
+            }
+          )
+          .then(({ data }) => {
+            this.start();
+            this.$notify({
+              type: "success",
+              text: "Terima kasih sudah menggunakan vote aplikasi kami"
+            });
+          })
+          .catch(err => {
+            this.$notify({
+              type: "error",
+              text: err.message
+            });
           });
-        }else{
+      }
+    },
+    minusAnswer(id, index) {
+      if (this.answer[index].point.length > 0) {
+        let check = this.answer[index].point.filter(e => {
+          return e == this.UserId;
+        });
+        if (!check[0]) {
+          this.$notify({
+            type: "error",
+            text:
+              "Anda harus menambahkan point ini sebelumnya"
+          });
+        } else {
           this.$axios
             .put(
-              `/answer/point/${id}`, {
-                point: this.UserId,
-              }, {
-                headers: {
-                  token: localStorage.getItem('token'),
-                },
+              `/answer/minuspoint/${id}`,
+              {
+                point: this.UserId
               },
+              {
+                headers: {
+                  token: localStorage.getItem("token")
+                }
+              }
             )
-            .then(({
-              data
-            }) => {
+            .then(({ data }) => {
               this.start();
-            })
-            .catch((err) => {
               this.$notify({
-                type: 'error',
-                text: err.message,
+                type: "success",
+                text: "Terima kasih sudah menggunakan vote aplikasi kami"
+              });
+            })
+            .catch(err => {
+              this.$notify({
+                type: "error",
+                text: err.message
               });
             });
         }
-    },
-    minusAnswer(id, index) {
-      if (this.answer[index].point.length> 0) {
-        let check = this.answer[index].point.filter(e=>{
-          return e == this.UserId
-        })
-        if(!check[0]){
-          this.$notify({
-            type: 'error',
-            text: 'Anda harus menambahkan point ini sebelumnya agar penanya merasa tidak dianggap',
-          });
-        }else{
-          this.$axios
-          .put(
-            `/answer/minuspoint/${id}`, {
-              point: this.UserId,
-            }, {
-              headers: {
-                token: localStorage.getItem('token'),
-              },
-            },
-          )
-          .then(({
-            data
-          }) => {
-            this.start();
-          })
-          .catch((err) => {
-            this.$notify({
-                type: 'error',
-                text: err.message,
-              });
-          });
-        }
       } else {
         this.$notify({
-          type: 'error',
-          text: 'Point Sudah tidak bisa dikurangi',
+          type: "error",
+          text: "Point Sudah tidak bisa dikurangi"
         });
       }
     },
@@ -403,104 +420,116 @@ export default {
       this.$axios
         .delete(`/question/${this.id}`, {
           headers: {
-            token: localStorage.getItem('token'),
-          },
+            token: localStorage.getItem("token")
+          }
         })
         .then(() => {
           this.$router.push({
-            name: 'category',
+            name: "category"
           });
           this.$notify({
-            type: 'warning',
-            text: 'Data Berhasil dihapus',
+            type: "warning",
+            text: "Data Berhasil dihapus"
           });
         })
-        .catch((err) => {
+        .catch(err => {
           this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+            type: "error",
+            text: err.message
+          });
         });
     },
     destroyAnswer(id) {
       this.$axios
         .delete(`/answer/${id}`, {
           headers: {
-            token: localStorage.getItem('token'),
-          },
+            token: localStorage.getItem("token")
+          }
         })
         .then(() => {
           this.start();
           this.$notify({
-            type: 'warning',
-            text: 'Data Berhasil dihapus',
+            type: "warning",
+            text: "Data Berhasil dihapus"
           });
         })
-        .catch((err) => {
+        .catch(err => {
           this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+            type: "error",
+            text: err.message
+          });
         });
     },
     updatedQuestion() {
       this.$axios
         .put(
-          `/question/${this.id}`, {
+          `/question/${this.id}`,
+          {
             title: this.question.title,
             question: this.question.question,
-            CategoryId: this.question.category,
-          }, {
-            headers: {
-              token: localStorage.getItem('token'),
-            },
+            CategoryId: this.question.category
           },
+          {
+            headers: {
+              token: localStorage.getItem("token")
+            }
+          }
         )
         .then(() => {
+          $("#update").modal("hide");
           this.start();
-          $('#update').modal('hide');
           this.$notify({
-            type: 'success',
-            text: 'Data Berhasil diupdate',
+            type: "success",
+            text: "Data Berhasil diupdate"
           });
         })
-        .catch((err) => {
+        .catch(err => {
           this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+            type: "error",
+            text: err.message
+          });
         });
     },
-    updatedAnswer(id, index) {
+    updatedAnswer(answer,id, index) {
       this.$axios
         .put(
-          `/answer/${id}`, {
-            answer: this.updateAnswer.answer,
-            QuestionId: this.id,
-          }, {
-            headers: {
-              token: localStorage.getItem('token'),
-            },
+          `/answer/${id}`,
+          {
+            answer: answer,
+            QuestionId: this.id
           },
+          {
+            headers: {
+              token: localStorage.getItem("token")
+            }
+          }
         )
-        .then(({
-          data
-        }) => {
+        .then(({ data }) => {
           this.start();
-          $(`#update${id}`).modal('hide');
+          $(`#update${id}`).modal("hide");
           this.$notify({
-            type: 'success',
-            text: 'Data Berhasil diupdate',
+            type: "success",
+            text: "Data Berhasil diupdate"
           });
         })
-        .catch((err) => {
+        .catch(err => {
           this.$notify({
-                type: 'error',
-                text: err.message,
-              });
+            type: "error",
+            text: err.message
+          });
         });
     },
-  },
+    share(){
+      FB.ui({
+        method: 'share',
+        mobile_iframe:true,
+        quote:`Teman, ada pertanyaan nih buatmu ${this.question.question} ?`,
+        href:`http://overflow.feedomain.tk/question/${this.question._id}`,
+      },function(res){
+        
+      })
+    }
+  }
 };
 </script>
 

@@ -18,10 +18,8 @@
         <button class="btn btn-primary my-2 my-sm-0" @click="login()">Login Facebook</button>
       </div>
       <div v-else>
-        <button class="btn btn-primary my-2 my-sm-0">
-        <router-link to="/profil" style="cursor:pointer;color:white">Profil
-            <span class="sr-only">(current)</span>
-        </router-link>
+        <button class="btn btn-primary my-2 my-sm-0" @click="profil">
+        Profil
         </button>
         <button class="btn btn-primary my-2 my-sm-0" data-toggle="modal" data-target="#create">Create Question</button>
         <button class="btn btn-primary my-2 my-sm-0" @click="logout">Logout</button>
@@ -72,7 +70,7 @@
 <script>
 window.fbAsyncInit = function() {
   FB.init({
-    appId: '1239370809540745',// 1007524822728521
+    appId: '1718336034878910',// 1007524822728521 localhost: 1239370809540745 amazon: 1718336034878910
     cookie: true, // enable cookies to allow the server to access
     // the session
     xfbml: true, // parse social plugins on this page
@@ -188,6 +186,11 @@ export default {
       this.$store.dispatch('setToken', null);
       this.$store.dispatch('setAdmin', null);
     },
+    profil(){
+      this.$router.push({
+        name:'profil'
+      })
+    }
   },
 };
 </script>

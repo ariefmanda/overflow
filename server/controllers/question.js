@@ -66,7 +66,6 @@ module.exports = {
         questions.point.push(req.body.point)
       }else{
         questions.point = req.body.point
-        
       }
       questions.save()
       res.json(questions)
